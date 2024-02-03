@@ -30,6 +30,7 @@ class RedNeuUtil:
         self.all_weights = []
         self.x_values = data.iloc[:, :-1]
         self.y_values_desired = data.iloc[:, -1]
+        self.generated_figure = []
 
     def init_optimization(self):
         self.add_bias()
@@ -44,8 +45,8 @@ class RedNeuUtil:
             self.update_weights(delta_x)
         self.print_all_epochs()
         charts_util = PerChartsUtil(self.list_epoch)
-        charts_util.make_weights_chars()
-        charts_util.make_error_chars()
+        self.generated_figure.append(charts_util.make_weights_chars())
+        self.generated_figure.append(charts_util.make_error_chars())
 
     def calculate_weights(self):
         self.weights = np.array(
@@ -64,12 +65,3 @@ class RedNeuUtil:
     def print_all_epochs(self):
         for epoch in self.list_epoch:
             print(epoch)
-
-
-eta = 0.5
-epochs = 14000
-
-parameter = Parameter(eta, epochs)
-
-util = RedNeuUtil(parameter, values)
-util.init_optimization()
