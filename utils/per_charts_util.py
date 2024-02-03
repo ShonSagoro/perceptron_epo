@@ -13,7 +13,7 @@ class PerChartsUtil:
         fig, ax = plt.subplots()
         all_weights_t = np.transpose(self.epochs[-1].all_weights)
         for i in range(len(all_weights_t)):
-            random_color = (random.random(), random.random(), random.random())
+            random_color = (random.randint(100, 255)/255, random.randint(100, 255)/255, random.randint(100, 255)/255)
             ax.plot(all_weights_t[i], label=f'w{(i+1)}', color=random_color)
         ax.legend()
         ax.set_xlabel('Epochs')

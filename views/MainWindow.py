@@ -4,9 +4,11 @@ import customtkinter
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from tkinter import filedialog
 from Models.parameter import Parameter
 from utils.red_neu_util import RedNeuUtil
+
+import os
 
 
 class FrameScrollBar(customtkinter.CTkScrollableFrame):
@@ -104,15 +106,26 @@ class MainWindow(customtkinter.CTk):
         self.button.grid(row=4, column=0, padx=10, pady=10, sticky="news")
         self.show_page(self.initial_frame)
 
+        self.load_button = customtkinter.CTkButton(self.initial_frame, text="Load CSV", command=self.load_csv)
+        self.load_button.grid(row=5, column=0, padx=10, pady=10, sticky="news")
+
         pass
 
     def button_callback(self):
+        self.load_button.configure(state="disabled")
         self.page_report.configure(state="disabled")
         self.page_charts.configure(state="disabled")
         self.parameter.eta = float(self.entry_eta.get())
         self.parameter.epochs = int(self.entry_epoch.get())
         self.red_neu_util = RedNeuUtil(self.parameter, self.test)
         threading.Thread(target=self.start_optimization).start()
+
+    def load_csv(self):
+        filename = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        if filename:
+            self.test = pd.read_csv(filename, header=None, delimiter=';')
+            file_name_only = os.path.basename(filename)
+            self.label_progressbar.configure(text=f"[INFO] CSV CARGADO: {file_name_only}")
 
     def start_optimization(self):
         self.label_progressbar.configure(text="[INFO] entrenando la red neuronal")
@@ -130,6 +143,7 @@ class MainWindow(customtkinter.CTk):
         self.page_report.configure(state="normal")
         self.progressbar.set(0.9)
         self.button.configure(state="normal")
+        self.load_button.configure(state="normal")
         self.progressbar.stop()
         self.progressbar.set(1)
         self.label_progressbar.configure(text="[INFO] Listo, checa el resto de pestañas")

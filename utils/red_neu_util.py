@@ -33,11 +33,14 @@ class RedNeuUtil:
         self.generated_figure = []
 
     def init_optimization(self):
+        np.set_printoptions(precision=4, suppress=True)
         self.add_bias()
         self.calculate_weights()
         for i in range(0, self.parameter.epochs):
             u = np.linalg.multi_dot([self.x_values[:, 1:], np.transpose(self.weights[1:])]) + self.weights[0]
-            errors_y = np.array(self.y_values_desired - activate_function(u))
+            print(activate_function(u))
+            print(self.y_values_desired - np.array(activate_function(u)))
+            errors_y = np.array(self.y_values_desired - np.array(activate_function(u)))
             delta_x = self.calculate_delta(errors_y)
             norm_error_y = np.linalg.norm(errors_y)
             self.all_weights.append(self.weights)
@@ -53,8 +56,7 @@ class RedNeuUtil:
             [1 if i == 0 else float(f"{random.uniform(0, 1):.4f}") for i in range(len(self.x_values[0]))])
 
     def update_weights(self, delta_x):
-        self.weights = np.add(self.weights, delta_x)
-
+        self.weights = np.round(np.add(self.weights, delta_x), 4)
     def calculate_delta(self, error_y):
         return self.parameter.eta * np.dot(np.transpose(error_y), self.x_values)
 
