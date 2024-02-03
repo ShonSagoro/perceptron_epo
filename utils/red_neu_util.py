@@ -68,4 +68,3 @@ parameter = Parameter(eta, toledacia, epochs)
 
 util = RedNeuUtil(parameter, values)
 util.init_optimization()
-git pull origin your-branch-name --allow-unrelated-histories
