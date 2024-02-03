@@ -5,6 +5,7 @@ import pandas as pd
 
 from Models.epoch import Epoch
 from Models.parameter import Parameter
+from utils.per_charts_util import PerChartsUtil
 
 # values =  pd.read_csv('test/test.csv', header=None)
 values = pd.read_csv(r'C:\Users\ramos\Documents\Python_Project\EpoNeu\test\test.csv', header=None)
@@ -26,6 +27,7 @@ class RedNeuUtil:
         self.list_epoch = []
         self.weights = []
         self.weights0 = []
+        self.all_weights = []
         self.x_values = data.iloc[:, :-1]
         self.y_values_desired = data.iloc[:, -1]
 
@@ -37,9 +39,13 @@ class RedNeuUtil:
             errors_y = np.array(self.y_values_desired - activate_function(u))
             delta_x = self.calculate_delta(errors_y)
             norm_error_y = np.linalg.norm(errors_y)
-            self.list_epoch.append(Epoch(i, norm_error_y, self.weights))
+            self.all_weights.append(self.weights)
+            self.list_epoch.append(Epoch(i, norm_error_y, self.weights, self.all_weights))
             self.update_weights(delta_x)
         self.print_all_epochs()
+        charts_util = PerChartsUtil(self.list_epoch)
+        charts_util.make_weights_chars()
+        charts_util.make_error_chars()
 
     def calculate_weights(self):
         self.weights = np.array(
@@ -60,11 +66,10 @@ class RedNeuUtil:
             print(epoch)
 
 
-eta = 0.25
-toledacia = 0.1
-epochs = 100
+eta = 0.5
+epochs = 14000
 
-parameter = Parameter(eta, toledacia, epochs)
+parameter = Parameter(eta, epochs)
 
 util = RedNeuUtil(parameter, values)
 util.init_optimization()

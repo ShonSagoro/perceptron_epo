@@ -1,6 +1,5 @@
 class Parameter:
-    def __init__(self, eta, tol, epochs):
+    def __init__(self, eta, epochs):
         self.eta=eta
-        self.tol=tol
         self.epochs=epochs
         
