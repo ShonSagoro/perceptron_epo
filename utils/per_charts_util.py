@@ -5,9 +5,10 @@ from matplotlib import pyplot as plt
 
 
 class PerChartsUtil:
-    def __init__(self, epochs):
+    def __init__(self, epochs, namefile):
         plt.style.use('dark_background')
         self.epochs=epochs
+        self.namefile=namefile
 
     def make_weights_chars(self):
         fig, ax = plt.subplots()
@@ -18,7 +19,7 @@ class PerChartsUtil:
         ax.legend()
         ax.set_xlabel('Epochs')
         ax.set_ylabel('Weights')
-        ax.set_title('Evolution of weights in each epoch')
+        ax.set_title(f'Evolution of weights in each epoch, from file: {self.namefile}')
         return fig
 
     def make_error_chars(self):
@@ -28,6 +29,6 @@ class PerChartsUtil:
         ax.legend()
         ax.set_xlabel('Epochs')
         ax.set_ylabel('Error')
-        ax.set_title('Evolution of error in each epoch')
+        ax.set_title(f'Evolution of norma Error in each epoch, from file: {self.namefile}')
         return fig
 

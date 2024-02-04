@@ -11,6 +11,7 @@ from utils.red_neu_util import RedNeuUtil
 import os
 
 
+
 class FrameScrollBar(customtkinter.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -20,6 +21,12 @@ class FrameScrollBar(customtkinter.CTkScrollableFrame):
 
     def set_content_frame(self, frame):
         frame.grid(row=0, column=0, sticky="nsew")
+
+
+def show_figure_in_frame(fig, parent):
+    canvas = FigureCanvasTkAgg(fig, master=parent)
+    plt.close(fig)
+    canvas.get_tk_widget().grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
 
 class MainWindow(customtkinter.CTk):
@@ -34,8 +41,10 @@ class MainWindow(customtkinter.CTk):
         self._set_appearance_mode("dark")
 
         self.parameter = Parameter(self.eta_default, self.epochs_default)
-        self.test = pd.read_csv('test/test.csv', header=None)
-        self.red_neu_util = RedNeuUtil(self.parameter, self.test)
+        file_path = 'test/test.csv'
+        self.file_name = os.path.basename(file_path)
+        self.test = pd.read_csv(file_path, header=None)
+        self.red_neu_util = RedNeuUtil(self.parameter, self.test, self.file_name)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -117,20 +126,22 @@ class MainWindow(customtkinter.CTk):
         self.page_charts.configure(state="disabled")
         self.parameter.eta = float(self.entry_eta.get())
         self.parameter.epochs = int(self.entry_epoch.get())
-        self.red_neu_util = RedNeuUtil(self.parameter, self.test)
+        self.red_neu_util = RedNeuUtil(self.parameter, self.test, self.file_name)
         threading.Thread(target=self.start_optimization).start()
 
     def load_csv(self):
         filename = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
         if filename:
             self.test = pd.read_csv(filename, header=None, delimiter=';')
-            file_name_only = os.path.basename(filename)
-            self.label_progressbar.configure(text=f"[INFO] CSV CARGADO: {file_name_only}")
+            self.file_name = os.path.basename(filename)
+            self.label_progressbar.configure(text=f"[INFO] CSV cargado exitosamente: {self.file_name}")
+        else:
+            self.label_progressbar.configure(text="[INFO] No se selecciono un archivo, intenta de nuevo con un CSV")
 
     def start_optimization(self):
         self.label_progressbar.configure(text="[INFO] entrenando la red neuronal")
         self.progressbar.set(0.1)
-        self.red_neu_util.init_optimization()
+        self.red_neu_util.start_process()
         self.progressbar.set(0.5)
 
         self.label_progressbar.configure(text="[INFO] graficando")
@@ -142,6 +153,7 @@ class MainWindow(customtkinter.CTk):
         self.show_report_simple(self.report_frame)
         self.page_report.configure(state="normal")
         self.progressbar.set(0.9)
+
         self.button.configure(state="normal")
         self.load_button.configure(state="normal")
         self.progressbar.stop()
@@ -151,7 +163,6 @@ class MainWindow(customtkinter.CTk):
     def show_page(self, page):
         for child in self.pages_root.winfo_children():
             child.grid_forget()
-
         page.grid(row=0, column=0, sticky="nsew")
 
     def put_the_chars(self, parent):
@@ -164,12 +175,7 @@ class MainWindow(customtkinter.CTk):
         for row, fig in enumerate(self.red_neu_util.generated_figure):
             figure_frame = customtkinter.CTkFrame(figures_frame)
             figure_frame.grid(row=row, column=0, sticky="nsew")
-            self.show_figure_in_frame(fig, figure_frame)
-
-    def show_figure_in_frame(self, fig, parent):
-        canvas = FigureCanvasTkAgg(fig, master=parent)
-        plt.close(fig)
-        canvas.get_tk_widget().grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+            show_figure_in_frame(fig, figure_frame)
 
     def show_report_simple(self, parent):
         cards_frame = FrameScrollBar(parent, width=600, height=600, corner_radius=0, fg_color="transparent")
