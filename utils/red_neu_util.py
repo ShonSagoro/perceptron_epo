@@ -56,7 +56,7 @@ class RedNeuUtil:
         self.x_values = np.hstack((ones_columns, self.x_values))
 
     def update_weights(self, delta_x):
-        self.weights = np.round(np.add(self.weights, delta_x), 4)
+        self.weights[1:] = np.round(np.add(self.weights[1:], delta_x[1:]), 4)
 
     def calculate_delta(self, error_y):
         return self.parameter.eta * np.dot(np.transpose(error_y), self.x_values)
