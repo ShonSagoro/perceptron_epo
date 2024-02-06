@@ -10,7 +10,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Models.parameter import Parameter
 from utils.red_neu_util import RedNeuUtil
 
-
+# 213465
 class FrameScrollBar(customtkinter.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -214,7 +214,10 @@ class MainWindow(customtkinter.CTk):
         label_info_norma = customtkinter.CTkLabel(report_frame, text=f"Norma error: {epoch.error_norma}")
         label_info_norma.grid(row=1, column=0, pady=(10, 0), padx=10, sticky="we")
 
-        label_info_info_weights = customtkinter.CTkLabel(report_frame, text=f"Worst f(x): {epoch.weights.__str__()}")
+        label_info_info_weights = customtkinter.CTkLabel(report_frame, text=f"Weights: {epoch.weights.__str__()}")
         label_info_info_weights.grid(row=2, column=0, pady=(10, 0), padx=10, sticky="we")
+
+        label_info_info_weights = customtkinter.CTkLabel(report_frame, text=f"Parameters: {self.parameter.__str__()}")
+        label_info_info_weights.grid(row=3, column=0, pady=(10, 0), padx=10, sticky="we")
 
         self.label_progressbar.configure(text=f"[INFO] Reportando:{epoch.id}")

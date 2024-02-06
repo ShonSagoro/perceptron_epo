@@ -42,13 +42,16 @@ class RedNeuUtil:
             u = np.linalg.multi_dot([self.x_values[:, 1:], np.transpose(self.weights[1:])]) + self.weights[0]
             errors_y = np.array(self.y_values_desired - np.array(activate_function(u)))
             norm_error_y = np.linalg.norm(errors_y)
-            if not (0 <= norm_error_y <= self.parameter.tolerance):
+            if norm_error_y > self.parameter.tolerance:
                 self.delta_x = self.calculate_delta(errors_y)
                 self.update_weights(self.delta_x)
             self.all_weights.append(self.weights)
             self.list_epoch.append(Epoch(i, norm_error_y, self.weights, self.all_weights))
         self.make_charts()
         self.print_all_epochs()
+
+    def update_weights(self, delta_x):
+        self.weights = np.round(np.add(self.weights, delta_x), 4)
 
     def calculate_weights(self):
         self.weights = np.array(
@@ -58,11 +61,9 @@ class RedNeuUtil:
         ones_columns = np.ones((self.x_values.shape[0], 1))
         self.x_values = np.hstack((ones_columns, self.x_values))
 
-    def update_weights(self, delta_x):
-        self.weights = np.round(np.add(self.weights,delta_x), 4)
 
     def calculate_delta(self, error_y):
-        return self.parameter.eta * np.dot(np.transpose(error_y), self.x_values)
+        return abs(self.parameter.eta) * np.dot(np.transpose(error_y), self.x_values)
 
     def print_all_epochs(self):
         for epoch in self.list_epoch:

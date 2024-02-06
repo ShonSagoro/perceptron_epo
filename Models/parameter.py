@@ -3,4 +3,6 @@ class Parameter:
         self.eta=eta
         self.epochs=epochs
         self.tolerance=tolerance
-        
+
+    def __str__(self):
+        return f'Parameter(eta={self.eta}, epochs={self.epochs}, tolerance={self.tolerance})'
