@@ -6,4 +6,4 @@ class Epoch:
         self.all_weights = all_weights
 
     def __str__(self):
-        return f"Epoch: {self.id}, Error Norma: {self.error_norma}, Weights: {self.weights}"
+        return f"Epoch: {self.id}, Error Norma: {self.error_norma}, Weights: {self.weights[1:]}"

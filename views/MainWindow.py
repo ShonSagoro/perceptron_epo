@@ -1,15 +1,14 @@
+import os
 import threading
+from tkinter import filedialog
 
 import customtkinter
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import filedialog
+
 from Models.parameter import Parameter
 from utils.red_neu_util import RedNeuUtil
-
-import os
-
 
 
 class FrameScrollBar(customtkinter.CTkScrollableFrame):
@@ -32,6 +31,7 @@ def show_figure_in_frame(fig, parent):
 class MainWindow(customtkinter.CTk):
     eta_default = 0.5
     epochs_default = 100
+    tolerance_default = 0
     title_font = ('Roboto', 24)
     normal_font = ('Roboto', 10)
 
@@ -40,10 +40,10 @@ class MainWindow(customtkinter.CTk):
         self.title("Red Neuronal - Perceptron")
         self._set_appearance_mode("dark")
 
-        self.parameter = Parameter(self.eta_default, self.epochs_default)
+        self.parameter = Parameter(self.eta_default, self.epochs_default, self.tolerance_default)
         file_path = 'test/test.csv'
         self.file_name = os.path.basename(file_path)
-        self.test = pd.read_csv(file_path, header=None)
+        self.test = pd.read_csv(file_path, header=None, delimiter=';')
         self.red_neu_util = RedNeuUtil(self.parameter, self.test, self.file_name)
 
         self.grid_columnconfigure(0, weight=1)
@@ -96,6 +96,13 @@ class MainWindow(customtkinter.CTk):
                                                   textvariable=customtkinter.StringVar(
                                                       value=str(self.epochs_default)))
         self.entry_epoch.grid(row=2, column=1, padx=10, pady=(10, 0), sticky="ew")
+
+        self.label_tolerance = customtkinter.CTkLabel(self.eta_frame, text="Tolerance: ")
+        self.label_tolerance.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+        self.entry_tolerance = customtkinter.CTkEntry(self.eta_frame,
+                                                  textvariable=customtkinter.StringVar(
+                                                      value=str(self.tolerance_default)))
+        self.entry_tolerance.grid(row=3, column=1, padx=10, pady=(10, 0), sticky="ew")
 
         # Progress
         self.bar_frame = customtkinter.CTkFrame(self.initial_frame)

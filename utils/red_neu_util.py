@@ -1,10 +1,10 @@
 import random
 
 import numpy as np
-import pandas as pd
 
 from Models.epoch import Epoch
 from utils.per_charts_util import PerChartsUtil
+
 
 def activate_function(u_values):
     return np.array([1 if u_values[i] >= 0 else 0 for i in range(len(u_values))])
@@ -21,6 +21,7 @@ class RedNeuUtil:
         self.y_values_desired = data.iloc[:, -1]
         self.generated_figure = []
         self.name_file = name_file
+        self.delta_x=0
         np.set_printoptions(precision=4, suppress=True)
 
     def start_process(self):
@@ -40,12 +41,14 @@ class RedNeuUtil:
         for i in range(0, self.parameter.epochs):
             u = np.linalg.multi_dot([self.x_values[:, 1:], np.transpose(self.weights[1:])]) + self.weights[0]
             errors_y = np.array(self.y_values_desired - np.array(activate_function(u)))
-            delta_x = self.calculate_delta(errors_y)
             norm_error_y = np.linalg.norm(errors_y)
+            if not (0 <= norm_error_y <= self.parameter.tolerance):
+                self.delta_x = self.calculate_delta(errors_y)
+                self.update_weights(self.delta_x)
             self.all_weights.append(self.weights)
             self.list_epoch.append(Epoch(i, norm_error_y, self.weights, self.all_weights))
-            self.update_weights(delta_x)
         self.make_charts()
+        self.print_all_epochs()
 
     def calculate_weights(self):
         self.weights = np.array(
@@ -56,7 +59,7 @@ class RedNeuUtil:
         self.x_values = np.hstack((ones_columns, self.x_values))
 
     def update_weights(self, delta_x):
-        self.weights[1:] = np.round(np.add(self.weights[1:], delta_x[1:]), 4)
+        self.weights = np.round(np.add(self.weights,delta_x), 4)
 
     def calculate_delta(self, error_y):
         return self.parameter.eta * np.dot(np.transpose(error_y), self.x_values)
