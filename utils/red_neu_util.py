@@ -21,7 +21,7 @@ class RedNeuUtil:
         self.y_values_desired = data.iloc[:, -1]
         self.generated_figure = []
         self.name_file = name_file
-        self.delta_x=0
+        self.delta_x = 0
         np.set_printoptions(precision=4, suppress=True)
 
     def start_process(self):
@@ -60,7 +60,6 @@ class RedNeuUtil:
     def add_bias(self):
         ones_columns = np.ones((self.x_values.shape[0], 1))
         self.x_values = np.hstack((ones_columns, self.x_values))
-
 
     def calculate_delta(self, error_y):
         return abs(self.parameter.eta) * np.dot(np.transpose(error_y), self.x_values)
